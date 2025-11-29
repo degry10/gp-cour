@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cours TodoList React - Version Minimaliste</title>
+    <style>
+        /* Variables CSS */
+        :root {
+            --primary-color: #4caf50;
+            --primary-dark: #45a049;
+            --danger-color: #f44336;
+            --danger-dark: #d32f2f;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #333;
+            --white: #fff;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --border-radius: 6px;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+            --code-comment: #6a9955;
+            --code-keyword: #569cd6;
+            --code-string: #ce9178;
+            --code-function: #dcdcaa;
+            --code-operator: #d4d4d4;
+        }
+        
+        /* Styles généraux */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--light-gray);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--dark-gray);
+            font-weight: normal;
+            border-bottom: 1px solid var(--medium-gray);
+            padding-bottom: 15px;
+        }
+        
+        h2 {
+            margin: 25px 0 15px;
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+        
+        h3 {
+            margin: 20px 0 10px;
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        code {
+            background-color: var(--light-gray);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .emoji {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+        
+        .section:last-child {
+            border-bottom: none;
+        }
+        
+        /* Styles pour le code formaté */
+        .code-container {
+            background-color: var(--code-bg);
+            border-radius: var(--border-radius);
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .code-header {
+            background-color: #2d2d2d;
+            color: #ccc;
+            padding: 8px 15px;
+            font-size: 0.85em;
+            border-bottom: 1px solid #3e3e3e;
+            font-family: 'Consolas', monospace;
+        }
+        
+        .code-block {
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            color: var(--code-text);
+        }
+        
+        .code-line {
+            display: block;
+            min-height: 20px;
+        }
+        
+        .indent-1 { margin-left: 20px; }
+        .indent-2 { margin-left: 40px; }
+        .indent-3 { margin-left: 60px; }
+        .indent-4 { margin-left: 80px; }
+        
+        .comment { color: var(--code-comment); font-style: italic; }
+        .keyword { color: var(--code-keyword); }
+        .string { color: var(--code-string); }
+        .function { color: var(--code-function); }
+        .operator { color: var(--code-operator); }
+        .jsx-tag { color: #569cd6; }
+        .jsx-attr { color: #9cdcfe; }
+        .jsx-text { color: #ce9178; }
+        
+        .command {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            margin: 10px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+        
+        .note {
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        .demo-container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .demo-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--dark-gray);
+        }
+        
+        /* Styles pour la démo de la TodoList */
+        .todo-demo {
+            max-width: 400px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .input-area input {
+            flex: 1;
+            padding: 8px 10px;
+            border: 1px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .input-area button.add {
+            background: var(--primary-color);
+            color: var(--white);
+            border-radius: var(--border-radius);
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        
+        .input-area button.add:hover {
+            background: var(--primary-dark);
+        }
+        
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .task-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            background: #f9f9f9;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .task-list li span {
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .actions button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--white);
+        }
+        
+        .actions .edit {
+            background: var(--primary-color);
+        }
+        
+        .actions .edit:hover {
+            background: var(--primary-dark);
+        }
+        
+        .actions .delete {
+            background: var(--danger-color);
+        }
+        
+        .actions .delete:hover {
+            background: var(--danger-dark);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--medium-gray);
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="emoji">🎓</span>Cours TodoList – Version minimaliste + CRUD complet</h1>
+        
+        <div class="section">
+            <h2><span class="emoji">🧩</span>1️⃣ Objectif du cours</h2>
+            <p>Dans ce projet, les apprenants vont créer une application React qui permet :</p>
+            <ul>
+                <li>Ajouter une tâche</li>
+                <li>Modifier une tâche</li>
+                <li>Supprimer une tâche</li>
+            </ul>
+            <p>Ce projet permet de comprendre :</p>
+            <ul>
+                <li><code>useState</code> pour gérer l'état</li>
+                <li><code>map()</code> pour afficher la liste</li>
+                <li>Gestion d'événements (<code>onChange</code>, <code>onClick</code>)</li>
+                <li>Mise à jour dynamique d'un tableau (CRUD complet)</li>
+                <li>Styliser simplement avec CSS minimaliste</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2><span class="emoji">🛠️</span>2️⃣ Création du projet (Vite)</h2>
+            <div class="command">
+                npm create vite@latest todolist-pedagogique -- --template react
+            </div>
+            <div class="command">
+                cd todolist-pedagogique
+            </div>
+            <div class="command">
+                npm install
+            </div>
+            <div class="command">
+                npm run dev
+            </div>
+            <p>Ouvrir le projet dans VS Code.</p>
+        </div>
+        
+        <div class="section">
+            <h2><span class="emoji">🧹</span>3️⃣ Nettoyage du projet</h2>
+            <p>Dans <code>App.jsx</code> :</p>
+            <div class="code-container">
+                <div class="code-header">App.jsx</div>
+                <div class="code-block">
+<span class="code-line"><span class="keyword">function</span> <span class="function">App</span>() {</span>
+<span class="code-line indent-1"><span class="keyword">return</span> (</span>
+<span class="code-line indent-2"><span class="jsx-tag">&lt;div&gt;</span></span>
+<span class="code-line indent-3"><span class="jsx-tag">&lt;h1&gt;</span>Ma TodoList<span class="jsx-tag">&lt;/h1&gt;</span></span>
+<span class="code-line indent-2"><span class="jsx-tag">&lt;/div&gt;</span></span>
+<span class="code-line indent-1">);</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">export</span> <span class="keyword">default</span> App;</span>
+                </div>
+            </div>
+            <p>On va progressivement ajouter le CRUD.</p>
+        </div>
+        
+        <div class="section">
+            <h2><span class="emoji">🪢</span>4️⃣ Gestion des états React</h2>
+            <p>Nous avons besoin de :</p>
+            <ul>
+                <li><code>tasks</code> → tableau des tâches</li>
+                <li><code>task</code> → texte du champ d'ajout / modification</li>
+                <li><code>editingTaskId</code> → id de la tâche en modification</li>
+            </ul>
+            <div class="code-container">
+                <div class="code-header">App.jsx</div>
+                <div class="code-block">
+<span class="code-line"><span class="keyword">import</span> { useState } <span class="keyword">from</span> <span class="string">"react"</span>;</span>
+<span class="code-line"><span class="keyword">import</span> <span class="string">"./App.css"</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">function</span> <span class="function">App</span>() {</span>
+<span class="code-line indent-1"><span class="keyword">const</span> [tasks, setTasks] = <span class="function">useState</span>([]);</span>
+<span class="code-line indent-1"><span class="keyword">const</span> [task, setTask] = <span class="function">useState</span>(<span class="string">""</span>);</span>
+<span class="code-line indent-1"><span class="keyword">const</span> [editingTaskId, setEditingTaskId] = <span class="function">useState</span>(<span class="keyword">null</span>);</span>
+<span class="code-line"></span>
+<span class="code-line indent-1"><span class="keyword">return</span> (</span>
+<span class="code-line indent-2"><span class="jsx-tag">&lt;div</span> <span class="jsx-attr">className</span>=<span class="string">"container"</span><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-3"><span class="jsx-tag">&lt;h1&gt;</span>Ma TodoList<span class="jsx-tag">&lt;/h1&gt;</span></span>
+<span class="code-line indent-2"><span class="jsx-tag">&lt;/div&gt;</span></span>
+<span class="code-line indent-1">);</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">export</span> <span class="keyword">default</span> App;</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2><span class="emoji">➕</span>5️⃣ Ajouter / Modifier une tâche</h2>
+            <div class="code-container">
+                <div class="code-header">App.jsx (extrait JSX)</div>
+                <div class="code-block">
+<span class="code-line"><span class="jsx-tag">&lt;div</span> <span class="jsx-attr">className</span>=<span class="string">"input-area"</span><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-1"><span class="jsx-tag">&lt;input</span></span>
+<span class="code-line indent-2"><span class="jsx-attr">type</span>=<span class="string">"text"</span></span>
+<span class="code-line indent-2"><span class="jsx-attr">placeholder</span>=<span class="string">"Ajouter une tâche..."</span></span>
+<span class="code-line indent-2"><span class="jsx-attr">value</span>={<span class="code-text">task</span>}</span>
+<span class="code-line indent-2"><span class="jsx-attr">onChange</span>={(e) <span class="jsx-attr">=></span> <span class="function">setTask</span>(e.target.value)}</span>
+<span class="code-line indent-1">/></span>
+<span class="code-line indent-1"><span class="jsx-tag">&lt;button</span></span>
+<span class="code-line indent-2"><span class="jsx-attr">className</span>=<span class="string">"add"</span></span>
+<span class="code-line indent-2"><span class="jsx-attr">onClick</span>={() <span class="jsx-attr">=></span> {</span>
+<span class="code-line indent-3"><span class="keyword">if</span> (task.<span class="function">trim</span>() === <span class="string">""</span>) <span class="keyword">return</span>;</span>
+<span class="code-line"></span>
+<span class="code-line indent-3"><span class="keyword">if</span> (editingTaskId) {</span>
+<span class="code-line indent-4"><span class="function">setTasks</span>(tasks.<span class="function">map</span>(t <span class="jsx-attr">=></span> t.id === editingTaskId ? {...t, <span class="code-text">text</span>: task} : t));</span>
+<span class="code-line indent-4"><span class="function">setEditingTaskId</span>(<span class="keyword">null</span>);</span>
+<span class="code-line indent-3">} <span class="keyword">else</span> {</span>
+<span class="code-line indent-4"><span class="function">setTasks</span>([...tasks, { <span class="code-text">id</span>: <span class="function">Date</span>().<span class="function">now</span>(), <span class="code-text">text</span>: task }]);</span>
+<span class="code-line indent-3">}</span>
+<span class="code-line indent-3"><span class="function">setTask</span>(<span class="string">""</span>);</span>
+<span class="code-line indent-2">}}</span>
+<span class="code-line indent-1"><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-2">{editingTaskId ? <span class="string">"Modifier"</span> : <span class="string">"Ajouter"</span>}</span>
+<span class="code-line indent-1"><span class="jsx-tag">&lt;/button&gt;</span></span>
+<span class="code-line"><span class="jsx-tag">&lt;/div&gt;</span></span>
+                </div>
+            </div>
+            <p>Si <code>editingTaskId</code> existe → on modifie</p>
+            <p>Sinon → on ajoute une nouvelle tâche</p>
+        </div>
+        
+        <div class="section">
+            <h2><span class="emoji">📋</span>6️⃣ Afficher la liste avec boutons à côté</h2>
+            <div class="code-container">
+                <div class="code-header">App.jsx (extrait JSX)</div>
+                <div class="code-block">
+<span class="code-line"><span class="jsx-tag">&lt;ul</span> <span class="jsx-attr">className</span>=<span class="string">"task-list"</span><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-1">{tasks.<span class="function">map</span>((t) <span class="jsx-attr">=></span> (</span>
+<span class="code-line indent-2"><span class="jsx-tag">&lt;li</span> <span class="jsx-attr">key</span>={<span class="code-text">t.id</span>}<span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-3"><span class="jsx-tag">&lt;span&gt;</span>{t.text}<span class="jsx-tag">&lt;/span&gt;</span></span>
+<span class="code-line indent-3"><span class="jsx-tag">&lt;div</span> <span class="jsx-attr">className</span>=<span class="string">"actions"</span><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-4"><span class="jsx-tag">&lt;button</span> <span class="jsx-attr">className</span>=<span class="string">"edit"</span> <span class="jsx-attr">onClick</span>={() <span class="jsx-attr">=></span> {</span>
+<span class="code-line indent-5"><span class="function">setEditingTaskId</span>(t.id);</span>
+<span class="code-line indent-5"><span class="function">setTask</span>(t.text);</span>
+<span class="code-line indent-4">}}<span class="jsx-tag">&gt;</span>Modifier<span class="jsx-tag">&lt;/button&gt;</span></span>
+<span class="code-line indent-4"><span class="jsx-tag">&lt;button</span> <span class="jsx-attr">className</span>=<span class="string">"delete"</span> <span class="jsx-attr">onClick</span>={() <span class="jsx-attr">=></span> {</span>
+<span class="code-line indent-5"><span class="function">setTasks</span>(tasks.<span class="function">filter</span>(task <span class="jsx-attr">=></span> task.id !== t.id));</span>
+<span class="code-line indent-4">}}<span class="jsx-tag">&gt;</span>Supprimer<span class="jsx-tag">&lt;/button&gt;</span></span>
+<span class="code-line indent-3"><span class="jsx-tag">&lt;/div&gt;</span></span>
+<span class="code-line indent-2"><span class="jsx-tag">&lt;/li&gt;</span></span>
+<span class="code-line indent-1">))}</span>
+<span class="code-line"><span class="jsx-tag">&lt;/ul&gt;</span></span>
+                </div>
+            </div>
+            <p><code>&lt;span&gt;</code> = texte</p>
+            <p><code>&lt;div className="actions"&gt;</code> = boutons alignés à côté du texte</p>
+            <p><code>display: flex</code> sur <code>&lt;li&gt;</code> assure l'alignement horizontal</p>
+        </div>
+        
+        <div class="section">
+            <h2><span class="emoji">🎨</span>7️⃣ CSS minimaliste (App.css)</h2>
+            <div class="code-container">
+                <div class="code-header">App.css</div>
+                <div class="code-block">
+<span class="code-line"><span class="comment">/* ----- GLOBAL ----- */</span></span>
+<span class="code-line"><span class="keyword">body</span> {</span>
+<span class="code-line indent-1"><span class="code-text">font-family</span>: Arial, sans-serif;</span>
+<span class="code-line indent-1"><span class="code-text">background</span>: <span class="string">#f5f5f5</span>;</span>
+<span class="code-line indent-1"><span class="code-text">margin</span>: <span class="number">0</span>;</span>
+<span class="code-line indent-1"><span class="code-text">padding</span>: <span class="number">0</span>;</span>
+<span class="code-line indent-1"><span class="code-text">display</span>: flex;</span>
+<span class="code-line indent-1"><span class="code-text">justify-content</span>: center;</span>
+<span class="code-line indent-1"><span class="code-text">align-items</span>: center;</span>
+<span class="code-line indent-1"><span class="code-text">height</span>: <span class="number">100</span>vh;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.container</span> {</span>
+<span class="code-line indent-1"><span class="code-text">width</span>: <span class="number">400</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">background</span>: <span class="string">#fff</span>;</span>
+<span class="code-line indent-1"><span class="code-text">padding</span>: <span class="number">20</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">border-radius</span>: <span class="number">10</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">box-shadow</span>: <span class="number">0</span> <span class="number">2</span>px <span class="number">8</span>px <span class="function">rgba</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0.1</span>);</span>
+<span class="code-line indent-1"><span class="code-text">text-align</span>: center;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">h1</span> {</span>
+<span class="code-line indent-1"><span class="code-text">margin-bottom</span>: <span class="number">20</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">font-weight</span>: normal;</span>
+<span class="code-line indent-1"><span class="code-text">color</span>: <span class="string">#333</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/* ----- INPUT AREA ----- */</span></span>
+<span class="code-line"><span class="keyword">.input-area</span> {</span>
+<span class="code-line indent-1"><span class="code-text">display</span>: flex;</span>
+<span class="code-line indent-1"><span class="code-text">gap</span>: <span class="number">10</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">margin-bottom</span>: <span class="number">20</span>px;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.input-area</span> <span class="keyword">input</span> {</span>
+<span class="code-line indent-1"><span class="code-text">flex</span>: <span class="number">1</span>;</span>
+<span class="code-line indent-1"><span class="code-text">padding</span>: <span class="number">8</span>px <span class="number">10</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">border</span>: <span class="number">1</span>px solid <span class="string">#ccc</span>;</span>
+<span class="code-line indent-1"><span class="code-text">border-radius</span>: <span class="number">6</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">outline</span>: none;</span>
+<span class="code-line indent-1"><span class="code-text">font-size</span>: <span class="number">14</span>px;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.input-area</span> <span class="keyword">button.add</span> {</span>
+<span class="code-line indent-1"><span class="code-text">background</span>: <span class="string">#4caf50</span>;</span>
+<span class="code-line indent-1"><span class="code-text">color</span>: <span class="string">#fff</span>;</span>
+<span class="code-line indent-1"><span class="code-text">border-radius</span>: <span class="number">6</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">border</span>: none;</span>
+<span class="code-line indent-1"><span class="code-text">padding</span>: <span class="number">8</span>px <span class="number">12</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">cursor</span>: pointer;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.input-area</span> <span class="keyword">button.add:hover</span> {</span>
+<span class="code-line indent-1"><span class="code-text">background</span>: <span class="string">#45a049</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/* ----- TASK LIST ----- */</span></span>
+<span class="code-line"><span class="keyword">.task-list</span> {</span>
+<span class="code-line indent-1"><span class="code-text">list-style</span>: none;</span>
+<span class="code-line indent-1"><span class="code-text">padding</span>: <span class="number">0</span>;</span>
+<span class="code-line indent-1"><span class="code-text">margin</span>: <span class="number">0</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.task-list</span> <span class="keyword">li</span> {</span>
+<span class="code-line indent-1"><span class="code-text">display</span>: flex;</span>
+<span class="code-line indent-1"><span class="code-text">justify-content</span>: space-between;</span>
+<span class="code-line indent-1"><span class="code-text">align-items</span>: center; <span class="comment">/* aligne texte et boutons sur la même ligne */</span></span>
+<span class="code-line indent-1"><span class="code-text">padding</span>: <span class="number">10</span>px <span class="number">12</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">margin-bottom</span>: <span class="number">8</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">background</span>: <span class="string">#f9f9f9</span>;</span>
+<span class="code-line indent-1"><span class="code-text">border-radius</span>: <span class="number">6</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">border</span>: <span class="number">1</span>px solid <span class="string">#e0e0e0</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.task-list</span> <span class="keyword">li</span> <span class="keyword">span</span> {</span>
+<span class="code-line indent-1"><span class="code-text">flex</span>: <span class="number">1</span>; <span class="comment">/* prend tout l'espace disponible */</span></span>
+<span class="code-line indent-1"><span class="code-text">margin-right</span>: <span class="number">10</span>px;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.task-list</span> <span class="keyword">li.completed</span> <span class="keyword">span</span> {</span>
+<span class="code-line indent-1"><span class="code-text">text-decoration</span>: line-through;</span>
+<span class="code-line indent-1"><span class="code-text">color</span>: <span class="string">#aaa</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">/* ----- BUTTONS ----- */</span></span>
+<span class="code-line"><span class="keyword">.actions</span> {</span>
+<span class="code-line indent-1"><span class="code-text">display</span>: flex;</span>
+<span class="code-line indent-1"><span class="code-text">gap</span>: <span class="number">5</span>px;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.actions</span> <span class="keyword">button</span> {</span>
+<span class="code-line indent-1"><span class="code-text">padding</span>: <span class="number">5</span>px <span class="number">10</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">border</span>: none;</span>
+<span class="code-line indent-1"><span class="code-text">border-radius</span>: <span class="number">5</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">cursor</span>: pointer;</span>
+<span class="code-line indent-1"><span class="code-text">font-size</span>: <span class="number">12</span>px;</span>
+<span class="code-line indent-1"><span class="code-text">color</span>: <span class="string">#fff</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.actions</span> <span class="keyword">.edit</span> {</span>
+<span class="code-line indent-1"><span class="code-text">background</span>: <span class="string">#4caf50</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.actions</span> <span class="keyword">.edit:hover</span> {</span>
+<span class="code-line indent-1"><span class="code-text">background</span>: <span class="string">#45a049</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.actions</span> <span class="keyword">.delete</span> {</span>
+<span class="code-line indent-1"><span class="code-text">background</span>: <span class="string">#f44336</span>;</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="keyword">.actions</span> <span class="keyword">.delete:hover</span> {</span>
+<span class="code-line indent-1"><span class="code-text">background</span>: <span class="string">#d32f2f</span>;</span>
+<span class="code-line">}</span>
+                </div>
+            </div>
+        </div>
+
+
+   <div class="section">
+            <h2><span class="emoji">📁</span>Code Complet de App.jsx avec Commentaires</h2>
+            
+            <div class="explanation">
+                <h3>📝 Explication du Code Complet</h3>
+                <p>Voici le fichier <code>App.jsx</code> complet avec tous les commentaires pédagogiques pour comprendre chaque partie du code.</p>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span>App.jsx</span>
+                    <span>Code Complet Commenté</span>
+                </div>
+                <div class="code-block">
+<span class="code-line"><span class="comment">// Import des hooks React nécessaires</span></span>
+<span class="code-line"><span class="keyword">import</span> { useState } <span class="keyword">from</span> <span class="string">"react"</span>;</span>
+<span class="code-line"><span class="keyword">import</span> <span class="string">"./App.css"</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">// Composant principal de l'application</span></span>
+<span class="code-line"><span class="keyword">function</span> <span class="function">App</span>() {</span>
+<span class="code-line"></span>
+<span class="code-line indent-1"><span class="comment">// État pour stocker la liste des tâches</span></span>
+<span class="code-line indent-1"><span class="comment">// tasks: tableau d'objets {id, text}</span></span>
+<span class="code-line indent-1"><span class="comment">// setTasks: fonction pour mettre à jour les tâches</span></span>
+<span class="code-line indent-1"><span class="keyword">const</span> [tasks, setTasks] = <span class="function">useState</span>([]);</span>
+<span class="code-line"></span>
+<span class="code-line indent-1"><span class="comment">// État pour stocker le texte de la tâche en cours de saisie</span></span>
+<span class="code-line indent-1"><span class="keyword">const</span> [task, setTask] = <span class="function">useState</span>(<span class="string">""</span>);</span>
+<span class="code-line"></span>
+<span class="code-line indent-1"><span class="comment">// État pour stocker l'ID de la tâche en cours d'édition</span></span>
+<span class="code-line indent-1"><span class="comment">// null = mode ajout, number = mode édition</span></span>
+<span class="code-line indent-1"><span class="keyword">const</span> [editingTaskId, setEditingTaskId] = <span class="function">useState</span>(<span class="keyword">null</span>);</span>
+<span class="code-line"></span>
+<span class="code-line indent-1"><span class="comment">// Fonction pour gérer l'ajout ou la modification d'une tâche</span></span>
+<span class="code-line indent-1"><span class="keyword">const</span> <span class="function">handleAddOrUpdateTask</span> = () => {</span>
+<span class="code-line indent-2"><span class="comment">// Empêcher l'ajout de tâches vides</span></span>
+<span class="code-line indent-2"><span class="keyword">if</span> (task.<span class="function">trim</span>() === <span class="string">""</span>) <span class="keyword">return</span>;</span>
+<span class="code-line"></span>
+<span class="code-line indent-2"><span class="comment">// Si on est en mode édition (editingTaskId existe)</span></span>
+<span class="code-line indent-2"><span class="keyword">if</span> (editingTaskId) {</span>
+<span class="code-line indent-3"><span class="comment">// Mettre à jour la tâche existante</span></span>
+<span class="code-line indent-3"><span class="function">setTasks</span>(tasks.<span class="function">map</span>(t =></span>
+<span class="code-line indent-4"><span class="comment">// Si c'est la tâche à modifier, on met à jour son texte</span></span>
+<span class="code-line indent-4">t.id === editingTaskId ? { ...t, <span class="variable">text</span>: task } : t</span>
+<span class="code-line indent-3">));</span>
+<span class="code-line indent-3"><span class="comment">// Quitter le mode édition</span></span>
+<span class="code-line indent-3"><span class="function">setEditingTaskId</span>(<span class="keyword">null</span>);</span>
+<span class="code-line indent-2">} <span class="keyword">else</span> {</span>
+<span class="code-line indent-3"><span class="comment">// Mode ajout : créer une nouvelle tâche</span></span>
+<span class="code-line indent-3"><span class="comment">// Date.now() génère un ID unique basé sur le timestamp</span></span>
+<span class="code-line indent-3"><span class="function">setTasks</span>([...tasks, {</span>
+<span class="code-line indent-4"><span class="variable">id</span>: <span class="function">Date</span>().<span class="function">now</span>(), <span class="comment">// ID unique</span></span>
+<span class="code-line indent-4"><span class="variable">text</span>: task          <span class="comment">// Texte de la tâche</span></span>
+<span class="code-line indent-3">}]);</span>
+<span class="code-line indent-2">}</span>
+<span class="code-line"></span>
+<span class="code-line indent-2"><span class="comment">// Vider le champ de saisie après ajout/modification</span></span>
+<span class="code-line indent-2"><span class="function">setTask</span>(<span class="string">""</span>);</span>
+<span class="code-line indent-1">};</span>
+<span class="code-line"></span>
+<span class="code-line indent-1"><span class="comment">// Fonction pour démarrer l'édition d'une tâche</span></span>
+<span class="code-line indent-1"><span class="keyword">const</span> <span class="function">startEditing</span> = (taskToEdit) => {</span>
+<span class="code-line indent-2"><span class="function">setEditingTaskId</span>(taskToEdit.id);  <span class="comment">// Passer en mode édition</span></span>
+<span class="code-line indent-2"><span class="function">setTask</span>(taskToEdit.text);        <span class="comment">// Pré-remplir le champ avec le texte actuel</span></span>
+<span class="code-line indent-1">};</span>
+<span class="code-line"></span>
+<span class="code-line indent-1"><span class="comment">// Fonction pour supprimer une tâche</span></span>
+<span class="code-line indent-1"><span class="keyword">const</span> <span class="function">deleteTask</span> = (taskId) => {</span>
+<span class="code-line indent-2"><span class="comment">// Filtrer le tableau pour garder toutes les tâches SAUF celle à supprimer</span></span>
+<span class="code-line indent-2"><span class="function">setTasks</span>(tasks.<span class="function">filter</span>(task => task.id !== taskId));</span>
+<span class="code-line indent-1">};</span>
+<span class="code-line"></span>
+<span class="code-line indent-1"><span class="comment">// Rendu du composant</span></span>
+<span class="code-line indent-1"><span class="keyword">return</span> (</span>
+<span class="code-line indent-2"><span class="jsx-tag">&lt;div</span> <span class="jsx-attr">className</span>=<span class="string">"container"</span><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-3"><span class="comment">{/* Titre de l'application */}</span></span>
+<span class="code-line indent-3"><span class="jsx-tag">&lt;h1&gt;</span>Ma TodoList<span class="jsx-tag">&lt;/h1&gt;</span></span>
+<span class="code-line"></span>
+<span class="code-line indent-3"><span class="comment">{/* Zone de saisie et bouton */}</span></span>
+<span class="code-line indent-3"><span class="jsx-tag">&lt;div</span> <span class="jsx-attr">className</span>=<span class="string">"input-area"</span><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-4"><span class="comment">{/* Champ de texte contrôlé par React */}</span></span>
+<span class="code-line indent-4"><span class="jsx-tag">&lt;input</span></span>
+<span class="code-line indent-5"><span class="jsx-attr">type</span>=<span class="string">"text"</span></span>
+<span class="code-line indent-5"><span class="jsx-attr">placeholder</span>=<span class="string">"Ajouter une tâche..."</span></span>
+<span class="code-line indent-5"><span class="jsx-attr">value</span>={<span class="variable">task</span>}  <span class="comment">// La valeur vient de l'état 'task'</span></span>
+<span class="code-line indent-5"><span class="jsx-attr">onChange</span>={(e) => <span class="function">setTask</span>(e.target.value)}  <span class="comment">// Met à jour l'état à chaque frappe</span></span>
+<span class="code-line indent-5"><span class="jsx-attr">onKeyPress</span>={(e) => {</span>
+<span class="code-line indent-6"><span class="comment">// Permet d'ajouter avec la touche Entrée</span></span>
+<span class="code-line indent-6"><span class="keyword">if</span> (e.key === <span class="string">"Enter"</span>) {</span>
+<span class="code-line indent-7"><span class="function">handleAddOrUpdateTask</span>();</span>
+<span class="code-line indent-6">}</span>
+<span class="code-line indent-5">}}</span>
+<span class="code-line indent-4">/></span>
+<span class="code-line"></span>
+<span class="code-line indent-4"><span class="comment">{/* Bouton dynamique : "Ajouter" ou "Modifier" selon le mode */}</span></span>
+<span class="code-line indent-4"><span class="jsx-tag">&lt;button</span></span>
+<span class="code-line indent-5"><span class="jsx-attr">className</span>=<span class="string">"add"</span></span>
+<span class="code-line indent-5"><span class="jsx-attr">onClick</span>={<span class="function">handleAddOrUpdateTask</span>}  <span class="comment">// Appelle la fonction au clic</span></span>
+<span class="code-line indent-4"><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-5">{editingTaskId ? <span class="string">"Modifier"</span> : <span class="string">"Ajouter"</span>}  <span class="comment">// Texte dynamique</span></span>
+<span class="code-line indent-4"><span class="jsx-tag">&lt;/button&gt;</span></span>
+<span class="code-line indent-3"><span class="jsx-tag">&lt;/div&gt;</span></span>
+<span class="code-line"></span>
+<span class="code-line indent-3"><span class="comment">{/* Liste des tâches */}</span></span>
+<span class="code-line indent-3"><span class="jsx-tag">&lt;ul</span> <span class="jsx-attr">className</span>=<span class="string">"task-list"</span><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-4">{</span>
+<span class="code-line indent-5"><span class="comment">// Parcourir toutes les tâches avec map()</span></span>
+<span class="code-line indent-5">tasks.<span class="function">map</span>((t) => (</span>
+<span class="code-line indent-6"><span class="jsx-tag">&lt;li</span> <span class="jsx-attr">key</span>={<span class="variable">t.id</span>}<span class="jsx-tag">&gt;</span>  <span class="comment">// Key unique pour React</span></span>
+<span class="code-line indent-7"><span class="comment">{/* Texte de la tâche */}</span></span>
+<span class="code-line indent-7"><span class="jsx-tag">&lt;span&gt;</span>{t.text}<span class="jsx-tag">&lt;/span&gt;</span></span>
+<span class="code-line"></span>
+<span class="code-line indent-7"><span class="comment">{/* Boutons d'action */}</span></span>
+<span class="code-line indent-7"><span class="jsx-tag">&lt;div</span> <span class="jsx-attr">className</span>=<span class="string">"actions"</span><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-8"><span class="comment">{/* Bouton Modifier */}</span></span>
+<span class="code-line indent-8"><span class="jsx-tag">&lt;button</span></span>
+<span class="code-line indent-9"><span class="jsx-attr">className</span>=<span class="string">"edit"</span></span>
+<span class="code-line indent-9"><span class="jsx-attr">onClick</span>={() => <span class="function">startEditing</span>(t)}  <span class="comment">// Démarre l'édition</span></span>
+<span class="code-line indent-8"><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-9">Modifier</span>
+<span class="code-line indent-8"><span class="jsx-tag">&lt;/button&gt;</span></span>
+<span class="code-line"></span>
+<span class="code-line indent-8"><span class="comment">{/* Bouton Supprimer */}</span></span>
+<span class="code-line indent-8"><span class="jsx-tag">&lt;button</span></span>
+<span class="code-line indent-9"><span class="jsx-attr">className</span>=<span class="string">"delete"</span></span>
+<span class="code-line indent-9"><span class="jsx-attr">onClick</span>={() => <span class="function">deleteTask</span>(t.id)}  <span class="comment">// Supprime la tâche</span></span>
+<span class="code-line indent-8"><span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-9">Supprimer</span>
+<span class="code-line indent-8"><span class="jsx-tag">&lt;/button&gt;</span></span>
+<span class="code-line indent-7"><span class="jsx-tag">&lt;/div&gt;</span></span>
+<span class="code-line indent-6"><span class="jsx-tag">&lt;/li&gt;</span></span>
+<span class="code-line indent-5">))</span>
+<span class="code-line indent-4">}</span>
+<span class="code-line indent-3"><span class="jsx-tag">&lt;/ul&gt;</span></span>
+<span class="code-line"></span>
+<span class="code-line indent-3"><span class="comment">{/* Message si aucune tâche */}</span></span>
+<span class="code-line indent-3">{tasks.<span class="variable">length</span> === <span class="number">0</span> && (</span>
+<span class="code-line indent-4"><span class="jsx-tag">&lt;p</span> <span class="jsx-attr">style</span>={{ <span class="variable">textAlign</span>: <span class="string">"center"</span>, <span class="variable">color</span>: <span class="string">"#666"</span> }}<span class="jsx-tag">&gt;</span></span>
+<span class="code-line indent-5">Aucune tâche pour le moment. Ajoutez-en une !</span>
+<span class="code-line indent-4"><span class="jsx-tag">&lt;/p&gt;</span></span>
+<span class="code-line indent-3">)}</span>
+<span class="code-line indent-2"><span class="jsx-tag">&lt;/div&gt;</span></span>
+<span class="code-line indent-1">);</span>
+<span class="code-line">}</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="comment">// Export du composant pour pouvoir l'utiliser ailleurs</span></span>
+<span class="code-line"><span class="keyword">export</span> <span class="keyword">default</span> App;</span>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <h3>🎯 Points Clés à Retenir</h3>
+                <ul>
+                    <li><strong>useState</strong> : Gère l'état local du composant</li>
+                    <li><strong>Controlled Components</strong> : Les champs de formulaire sont contrôlés par React</li>
+                    <li><strong>Immutabilité</strong> : On ne modifie jamais directement l'état, on crée de nouveaux tableaux/objets</li>
+                    <li><strong>Key Prop</strong> : Essentielle pour les listes React</li>
+                    <li><strong>Conditional Rendering</strong> : Affichage conditionnel basé sur l'état</li>
+                </ul>
+            </div>
+        </div>
+
+
+
+        
+        <div class="section">
+            <h2><span class="emoji">📱</span>Démonstration visuelle</h2>
+            <div class="demo-container">
+                <h3 class="demo-title">Aperçu de l'application TodoList</h3>
+                <div class="todo-demo">
+                    <h1>Ma TodoList</h1>
+                    <div class="input-area">
+                        <input type="text" placeholder="Ajouter une tâche..." value="">
+                        <button class="add">Ajouter</button>
+                    </div>
+                    <ul class="task-list">
+                        <li>
+                            <span>Apprendre React</span>
+                            <div class="actions">
+                                <button class="edit">Modifier</button>
+                                <button class="delete">Supprimer</button>
+                            </div>
+                        </li>
+                        <li>
+                            <span>Créer une TodoList</span>
+                            <div class="actions">
+                                <button class="edit">Modifier</button>
+                                <button class="delete">Supprimer</button>
+                            </div>
+                        </li>
+                        <li>
+                            <span>Comprendre les hooks</span>
+                            <div class="actions">
+                                <button class="edit">Modifier</button>
+                                <button class="delete">Supprimer</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Cours TodoList React - Version minimaliste avec CRUD complet</p>
+            <h2>
+                
+            </h2>
+        </footer>
+    </div>
+</body>
+</html>
