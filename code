@@ -1,0 +1,58 @@
+import { useState } from "react";
+import "./App.css";
+
+function App() {
+  const [tasks, setTasks] = useState([]);
+  const [task, setTask] = useState("");
+  const [editingTaskId, setEditingTaskId] = useState(null);
+
+  return (
+    <div className="container">
+      <h1>Ma TodoList</h1>
+
+      <div className="input-area">
+  <input
+    type="text"
+    placeholder="Ajouter une tâche..."
+    value={task}
+    onChange={(e) => setTask(e.target.value)}
+  />
+  <button
+    className="add"
+    onClick={() => {
+      if (task.trim() === "") return;
+
+      if (editingTaskId) {
+        setTasks(tasks.map(t => t.id === editingTaskId ? {...t, text: task} : t));
+        setEditingTaskId(null);
+      } else {
+        setTasks([...tasks, { id: Date.now(), text: task }]);
+      }
+      setTask("");
+    }}
+  >
+    {editingTaskId ? "Modifier" : "Ajouter"}
+  </button>
+</div>
+<ul className="task-list">
+  {tasks.map((t) => (
+    <li key={t.id}>
+      <span>{t.text}</span>
+      <div className="actions">
+        <button className="edit" onClick={() => {
+          setEditingTaskId(t.id);
+          setTask(t.text);
+        }}>Modifier</button>
+        <button className="delete" onClick={() => {
+          setTasks(tasks.filter(task => task.id !== t.id));
+        }}>Supprimer</button>
+      </div>
+    </li>
+  ))}
+</ul>
+
+    </div>
+  );
+}
+
+export default App;
